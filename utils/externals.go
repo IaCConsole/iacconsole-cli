@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -9,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -121,4 +123,78 @@ func (s *State) GetDimData(dimensionKey string, dimensionValue string, skipOnNot
 	}
 
 	return dimensionJsonMap, nil
+}
+
+func (s *State) ReportHistory(cmdToExec string, cmdArgs []string, cmdMainArg string, exitCode int) {
+	if s.IacconsoleApiUrl == "" {
+		// Only report to API if URL is configured
+		return
+	}
+
+	var outputs map[string]interface{}
+
+	if exitCode == 0 && (cmdMainArg == "apply" || cmdMainArg == "destroy") {
+		// Run tofu output -json to gather outputs
+		outputCmd := exec.Command(cmdToExec, "output", "-json")
+		outputCmd.Dir = s.CmdWorkTempDir
+
+		outputBytes, err := outputCmd.Output()
+		if err == nil && len(outputBytes) > 0 {
+			// Terraform outputs structure: {"name": {"sensitive": false, "type": "string", "value": "val"}}
+			var tfOutputs map[string]interface{}
+			if err := json.Unmarshal(outputBytes, &tfOutputs); err == nil {
+				// We can either pass the entire tfOutputs or extract just the values
+				// The API's HistoryRequestPost map[string]interface{} can handle the whole structure,
+				// so let's pass it as is, or we can unpack values. Passing as is gives type and sensitive flags.
+				outputs = tfOutputs
+			} else {
+				log.Printf("Failed to parse tf outputs: %v\n", err)
+			}
+		} else if err != nil {
+			log.Printf("Failed to get tf outputs: %v\n", err)
+		}
+	}
+
+	workspace := s.Workspace
+	if workspace == "" {
+		workspace = "master"
+	}
+
+	payload := map[string]interface{}{
+		"cmdtoexec":  cmdToExec,
+		"cmdargs":    cmdArgs,
+		"cmdmainarg": cmdMainArg,
+		"exitcode":   exitCode,
+		"dimensions": s.ParsedDimensions,
+		"outputs":    outputs,
+	}
+
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("Failed to marshal history payload: %v", err)
+		return
+	}
+
+	url := fmt.Sprintf("%s/v1/history/%s/%s/%s", s.IacconsoleApiUrl, s.OrgName, workspace, s.UnitName)
+	req, err := http.NewRequestWithContext(context.TODO(), "POST", url, strings.NewReader(string(payloadBytes)))
+	if err != nil {
+		log.Printf("Failed to create request for history: %v", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Failed to report history to %s: %v", url, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		log.Printf("Failed to report history, status code %d: %s", resp.StatusCode, string(body))
+	} else {
+		log.Println("Successfully reported execution history to IaC Console API")
+	}
 }

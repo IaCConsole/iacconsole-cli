@@ -135,6 +135,8 @@ var execCmd = &cobra.Command{
 			exitCodeFinal = execChildCommand.ProcessState.ExitCode()
 		}
 
+		s.ReportHistory(cmdToExec, cmdArgs, args[0], exitCodeFinal)
+
 		if (exitCodeFinal == 0 && (args[0] == "apply" || args[0] == "destroy")) || forceCleanTempDir {
 			os.RemoveAll(s.CmdWorkTempDir)
 			log.Println("removed temp dir: " + s.CmdWorkTempDir)

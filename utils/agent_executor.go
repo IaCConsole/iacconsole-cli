@@ -150,6 +150,8 @@ func ExecuteAgentCommand(conn *websocket.Conn, cmd AgentCommand, state *State) {
 		}
 	}
 
+	state.ReportHistory(cmdToExec, args, cmd.Action, exitCode)
+
 	// 10. Cleanup
 	if exitCode == 0 && (cmd.Action == "apply" || cmd.Action == "destroy") {
 		os.RemoveAll(state.CmdWorkTempDir)
