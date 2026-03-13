@@ -2,16 +2,15 @@ package cmd
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
-	"os/signal"
 	"runtime"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/alt-dima/iacconsole-cli/utils"
@@ -44,25 +43,23 @@ var agentCmd = &cobra.Command{
 		log.Printf("Agent ID: %s", agentID)
 		log.Printf("Connecting to: %s", wsURL)
 
-		runAgent(wsURL, authHeader, agentID)
+		runAgent(cmd.Context(), wsURL, authHeader, agentID)
 	},
 }
 
-func runAgent(wsURL, authHeader, agentID string) {
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
+func runAgent(ctx context.Context, wsURL, authHeader, agentID string) {
 	for {
 		header := http.Header{}
 		header.Add("Authorization", authHeader)
 
-		c, _, err := websocket.DefaultDialer.Dial(wsURL, header)
+		dialer := websocket.DefaultDialer
+		c, _, err := dialer.DialContext(ctx, wsURL, header)
 		if err != nil {
 			log.Printf("Dial error: %v. Retrying in 5s...", err)
 			select {
 			case <-time.After(5 * time.Second):
 				continue
-			case <-interrupt:
+			case <-ctx.Done():
 				return
 			}
 		}
@@ -140,7 +137,7 @@ func runAgent(wsURL, authHeader, agentID string) {
 						continue
 					}
 					// log.Printf("Received command: %+v", cmd)
-					go executeCommand(c, cmd, autoExecute)
+					go executeCommand(ctx, c, cmd, autoExecute)
 				case "ping":
 					pong := utils.AgentPong{
 						AgentMessage: utils.AgentMessage{Type: "pong"},
@@ -158,8 +155,12 @@ func runAgent(wsURL, authHeader, agentID string) {
 		case <-done:
 			c.Close()
 			log.Printf("Connection lost. Retrying in 5s...")
-			time.Sleep(5 * time.Second)
-		case <-interrupt:
+			select {
+			case <-time.After(5 * time.Second):
+			case <-ctx.Done():
+				return
+			}
+		case <-ctx.Done():
 			log.Println("Interrupt received, closing connection...")
 			// Cleanly close the connection by sending a close message and then
 			// waiting (with timeout) for the server to close the connection.
@@ -177,7 +178,7 @@ func runAgent(wsURL, authHeader, agentID string) {
 	}
 }
 
-func executeCommand(c *websocket.Conn, cmd utils.AgentCommand, autoExecute bool) {
+func executeCommand(ctx context.Context, c *websocket.Conn, cmd utils.AgentCommand, autoExecute bool) {
 	// Format command for display
 	cmdStr := formatCommandString(cmd)
 
@@ -231,7 +232,7 @@ func executeCommand(c *websocket.Conn, cmd utils.AgentCommand, autoExecute bool)
 	state.IacconsoleApiUrl = os.Getenv("IACCONSOLE_API_URL")
 	state.StateS3Path = "./state"
 
-	utils.ExecuteAgentCommand(c, cmd, state)
+	utils.ExecuteAgentCommand(ctx, c, cmd, state)
 }
 
 // formatCommandString creates a human-readable string representation of the command

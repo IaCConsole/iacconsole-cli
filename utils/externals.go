@@ -62,7 +62,7 @@ func (s *State) SetupBackendConfig() map[string]interface{} {
 	return backendConfigMap
 }
 
-func (s *State) GetDimData(dimensionKey string, dimensionValue string, skipOnNotFound bool) (map[string]interface{}, error) {
+func (s *State) GetDimData(ctx context.Context, dimensionKey string, dimensionValue string, skipOnNotFound bool) (map[string]interface{}, error) {
 	var dimensionJsonMap map[string]interface{}
 
 	if s.IacconsoleApiUrl == "" {
@@ -80,7 +80,11 @@ func (s *State) GetDimData(dimensionKey string, dimensionValue string, skipOnNot
 			return nil, err
 		}
 	} else {
-		resp, err := http.Get(s.IacconsoleApiUrl + "/v1/dimension/" + s.OrgName + "/" + dimensionKey + "/" + dimensionValue + "?workspace=" + s.Workspace + "&fallbacktomaster=true")
+		req, err := http.NewRequestWithContext(ctx, "GET", s.IacconsoleApiUrl + "/v1/dimension/" + s.OrgName + "/" + dimensionKey + "/" + dimensionValue + "?workspace=" + s.Workspace + "&fallbacktomaster=true", nil)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +129,7 @@ func (s *State) GetDimData(dimensionKey string, dimensionValue string, skipOnNot
 	return dimensionJsonMap, nil
 }
 
-func (s *State) ReportHistory(cmdToExec string, cmdArgs []string, cmdMainArg string, exitCode int) {
+func (s *State) ReportHistory(ctx context.Context, cmdToExec string, cmdArgs []string, cmdMainArg string, exitCode int) {
 	if s.IacconsoleApiUrl == "" {
 		// Only report to API if URL is configured
 		return
@@ -176,7 +180,7 @@ func (s *State) ReportHistory(cmdToExec string, cmdArgs []string, cmdMainArg str
 	}
 
 	url := fmt.Sprintf("%s/v1/history/%s/%s/%s", s.IacconsoleApiUrl, s.OrgName, workspace, s.UnitName)
-	req, err := http.NewRequestWithContext(context.TODO(), "POST", url, strings.NewReader(string(payloadBytes)))
+	req, err := http.NewRequestWithContext(ctx, "POST", url, strings.NewReader(string(payloadBytes)))
 	if err != nil {
 		log.Printf("Failed to create request for history: %v", err)
 		return

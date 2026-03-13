@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"context"
 	"io"
 	"log"
 	"os"
@@ -9,13 +10,14 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 // ExecuteAgentCommand runs a command and streams output to WebSocket
-func ExecuteAgentCommand(conn *websocket.Conn, cmd AgentCommand, state *State) {
+func ExecuteAgentCommand(ctx context.Context, conn *websocket.Conn, cmd AgentCommand, state *State) {
 	// 1. Prepare environment
 	state.OrgName = cmd.Org
 	state.UnitName = cmd.Unit
@@ -78,13 +80,13 @@ func ExecuteAgentCommand(conn *websocket.Conn, cmd AgentCommand, state *State) {
 	}
 
 	// 6. Generate variables - handle errors gracefully
-	if err := state.GenerateVarsByDims(); err != nil {
+	if err := state.GenerateVarsByDims(ctx); err != nil {
 		log.Printf("Error generating vars by dimensions: %v", err)
 		sendComplete(conn, cmd.ID, 1, err.Error())
 		return
 	}
 
-	if err := state.GenerateVarsByDimOptional("defaults"); err != nil {
+	if err := state.GenerateVarsByDimOptional(ctx, "defaults"); err != nil {
 		log.Printf("Error generating optional vars: %v", err)
 		sendComplete(conn, cmd.ID, 1, err.Error())
 		return
@@ -118,9 +120,12 @@ func ExecuteAgentCommand(conn *websocket.Conn, cmd AgentCommand, state *State) {
 
 	// 8. Spawn process
 	log.Printf("Agent executing: %s %s", cmdToExec, strings.Join(args, " "))
-	child := exec.Command(cmdToExec, args...)
+	child := exec.CommandContext(ctx, cmdToExec, args...)
 	child.Dir = state.CmdWorkTempDir
 	child.Env = os.Environ()
+	child.Cancel = func() error {
+		return child.Process.Signal(syscall.SIGINT)
+	}
 
 	stdout, _ := child.StdoutPipe()
 	stderr, _ := child.StderrPipe()
@@ -150,7 +155,7 @@ func ExecuteAgentCommand(conn *websocket.Conn, cmd AgentCommand, state *State) {
 		}
 	}
 
-	state.ReportHistory(cmdToExec, args, cmd.Action, exitCode)
+	state.ReportHistory(ctx, cmdToExec, args, cmd.Action, exitCode)
 
 	// 10. Cleanup
 	if exitCode == 0 && (cmd.Action == "apply" || cmd.Action == "destroy") {

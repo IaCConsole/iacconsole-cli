@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"os/signal"
 	"path/filepath"
 	"strings"
 	"syscall"
@@ -23,9 +22,6 @@ var execCmd = &cobra.Command{
 		initConfig()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		//Creating signal to be handled and send to the child tofu/terraform
-		sigs := make(chan os.Signal, 2)
-		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 		var err error
 
 		// Creating Session State and filling with values
@@ -78,10 +74,10 @@ var execCmd = &cobra.Command{
 			log.Fatalf("Failed to prepare temp directory: %v", err)
 		}
 
-		if err := s.GenerateVarsByDims(); err != nil {
+		if err := s.GenerateVarsByDims(cmd.Context()); err != nil {
 			log.Fatalf("Failed to generate vars by dimensions: %v", err)
 		}
-		if err := s.GenerateVarsByDimOptional("defaults"); err != nil {
+		if err := s.GenerateVarsByDimOptional(cmd.Context(), "defaults"); err != nil {
 			log.Fatalf("Failed to generate optional vars: %v", err)
 		}
 		if err := s.GenerateVarsByEnvVars(); err != nil {
@@ -103,11 +99,14 @@ var execCmd = &cobra.Command{
 		}
 		cmdToExec := s.GetStringFromViperByOrgOrDefault("cmd_to_exec")
 
-		// Starting child and Waiting for it to finish, passing signals to it
+		// Starting child and Waiting for it to finish
 		log.Println("excuting: " + cmdToExec + " " + strings.Join(cmdArgs, " "))
-		execChildCommand := exec.Command(cmdToExec, cmdArgs...)
+		execChildCommand := exec.CommandContext(cmd.Context(), cmdToExec, cmdArgs...)
 		execChildCommand.Dir = s.CmdWorkTempDir
 		execChildCommand.Env = os.Environ()
+		execChildCommand.Cancel = func() error {
+			return execChildCommand.Process.Signal(syscall.SIGINT)
+		}
 		execChildCommand.Stdin = os.Stdin
 		execChildCommand.Stdout = os.Stdout
 		execChildCommand.Stderr = os.Stderr
@@ -116,13 +115,7 @@ var execCmd = &cobra.Command{
 			log.Fatalf("cmd.Start() failed with %s\n", err)
 		}
 
-		go func() {
-			sig := <-sigs
-			log.Println("Got singnal +" + sig.String())
-			if err := execChildCommand.Process.Signal(sig); err != nil {
-				log.Printf("Failed to send signal to child process: %v", err)
-			}
-		}()
+
 
 		err = execChildCommand.Wait()
 		exitCodeFinal := 0
@@ -135,7 +128,7 @@ var execCmd = &cobra.Command{
 			exitCodeFinal = execChildCommand.ProcessState.ExitCode()
 		}
 
-		s.ReportHistory(cmdToExec, cmdArgs, args[0], exitCodeFinal)
+		s.ReportHistory(cmd.Context(), cmdToExec, cmdArgs, args[0], exitCodeFinal)
 
 		if (exitCodeFinal == 0 && (args[0] == "apply" || args[0] == "destroy")) || forceCleanTempDir {
 			os.RemoveAll(s.CmdWorkTempDir)

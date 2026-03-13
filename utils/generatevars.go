@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,9 +9,9 @@ import (
 	"strings"
 )
 
-func (s *State) GenerateVarsByDims() error {
+func (s *State) GenerateVarsByDims(ctx context.Context) error {
 	for dimKey, dimValue := range s.ParsedDimensions {
-		dimensionJsonMap, err := s.GetDimData(dimKey, dimValue, false)
+		dimensionJsonMap, err := s.GetDimData(ctx, dimKey, dimValue, false)
 		if err != nil {
 			return err
 		}
@@ -29,9 +30,9 @@ func (s *State) GenerateVarsByDims() error {
 	return nil
 }
 
-func (s *State) GenerateVarsByDimOptional(optionType string) error {
+func (s *State) GenerateVarsByDimOptional(ctx context.Context, optionType string) error {
 	for dimKey := range s.ParsedDimensions {
-		dimensionJsonMap, err := s.GetDimData(dimKey, "dim_"+optionType, true)
+		dimensionJsonMap, err := s.GetDimData(ctx, dimKey, "dim_"+optionType, true)
 		if err != nil {
 			return err
 		}
