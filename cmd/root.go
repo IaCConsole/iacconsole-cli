@@ -43,6 +43,10 @@ func Execute() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	if ctx.Err() != nil {
+		log.Printf("Shutting down gracefully...")
+	}
 }
 
 func init() {
