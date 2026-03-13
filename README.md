@@ -4,7 +4,7 @@
 [![GitHub license](https://img.shields.io/github/license/alt-dima/iacconsole-cli)](https://github.com/alt-dima/iacconsole-cli/blob/main/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/alt-dima/iacconsole-cli)](https://goreportcard.com/report/github.com/alt-dima/iacconsole-cli)
 [![GitHub release](https://img.shields.io/github/v/release/alt-dima/iacconsole-cli)](https://github.com/alt-dima/iacconsole-cli/releases)
-[![Go Version](https://img.shields.io/badge/go-%3E%3D1.21-blue)](https://golang.org/)
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.26-blue)](https://golang.org/)
 [![Downloads](https://img.shields.io/github/downloads/alt-dima/iacconsole-cli/total)](https://github.com/alt-dima/iacconsole-cli/releases)
 
 IaCConsole CLI is a configuration management tool that dynamically orchestrates OpenTofu or Terraform deployments. It separates infrastructure configuration from code, enabling DevOps teams to reuse Terraform modules across multiple environments (dev, staging, production) without code duplication. Configuration can be sourced from files or the IaCConsole API (CMDB), an OpenAPI-powered configuration database.
