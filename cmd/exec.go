@@ -8,7 +8,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/alt-dima/iacconsole-cli/utils"
+	"github.com/iacconsole/iacconsole-cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -114,8 +114,6 @@ var execCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("cmd.Start() failed with %s\n", err)
 		}
-
-
 
 		err = execChildCommand.Wait()
 		exitCodeFinal := 0

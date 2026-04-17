@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alt-dima/iacconsole-cli/utils"
 	"github.com/gorilla/websocket"
+	"github.com/iacconsole/iacconsole-cli/utils"
 	"github.com/spf13/cobra"
 )
 

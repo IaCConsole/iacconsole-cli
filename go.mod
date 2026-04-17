@@ -1,6 +1,6 @@
-module github.com/alt-dima/iacconsole-cli
+module github.com/iacconsole/iacconsole-cli
 
-go 1.26.1
+go 1.26.0
 
 require (
 	github.com/gorilla/websocket v1.5.3
