@@ -136,8 +136,11 @@ func (s *State) ReportHistory(ctx context.Context, cmdToExec string, cmdArgs []s
 	}
 
 	var outputs map[string]interface{}
+	if !s.ReportOutput {
+		log.Println("Terraform output reporting is disabled")
+	}
 
-	if exitCode == 0 && (cmdMainArg == "apply" || cmdMainArg == "destroy") {
+	if s.ReportOutput && exitCode == 0 && (cmdMainArg == "apply" || cmdMainArg == "destroy") {
 		// Run tofu output -json to gather outputs
 		outputCmd := exec.Command(cmdToExec, "output", "-json")
 		outputCmd.Dir = s.CmdWorkTempDir

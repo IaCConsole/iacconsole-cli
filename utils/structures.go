@@ -14,6 +14,7 @@ type State struct {
 	StateS3Path       string
 	IacconsoleApiUrl  string
 	Workspace         string
+	ReportOutput      bool
 }
 
 type unitManifestStruct struct {

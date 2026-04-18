@@ -57,6 +57,7 @@ var execCmd = &cobra.Command{
 		s.Workspace, _ = cmd.Flags().GetString("workspace")
 		s.IacconsoleApiUrl = IACCONSOLE_API_URL
 		s.DimensionsFlags, _ = cmd.Flags().GetStringSlice("dimension")
+		s.ReportOutput, _ = cmd.Flags().GetBool("report-output")
 		s.UnitPath, _ = filepath.Abs(s.GetStringFromViperByOrgOrDefault("units_path") + "/" + s.OrgName + "/" + s.UnitName)
 		if s.GetStringFromViperByOrgOrDefault("shared_modules_path") != "" {
 			s.SharedModulesPath, _ = filepath.Abs(s.GetStringFromViperByOrgOrDefault("shared_modules_path"))
@@ -156,6 +157,7 @@ func init() {
 	execCmd.Flags().StringP("org", "o", "", "specify org")
 	execCmd.Flags().StringP("workspace", "w", "master", "specify workspace for IaCConsole DB")
 	execCmd.Flags().BoolP("clean", "c", false, "remove tmp after execution")
+	execCmd.Flags().Bool("report-output", false, "report terraform output to server")
 	//viper.BindPFlag("org", execCmd.Flags().Lookup("org"))
 	if err := execCmd.MarkFlagRequired("unit"); err != nil {
 		log.Fatalf("Error marking flag 'unit' as required: %v", err)

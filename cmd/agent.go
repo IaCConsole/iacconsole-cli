@@ -19,7 +19,8 @@ import (
 )
 
 var (
-	autoExecute bool
+	autoExecute  bool
+	reportOutput bool
 )
 
 var agentCmd = &cobra.Command{
@@ -231,6 +232,7 @@ func executeCommand(ctx context.Context, c *websocket.Conn, cmd utils.AgentComma
 	state := &utils.State{}
 	state.IacconsoleApiUrl = os.Getenv("IACCONSOLE_API_URL")
 	state.StateS3Path = "./state"
+	state.ReportOutput = reportOutput
 
 	utils.ExecuteAgentCommand(ctx, c, cmd, state)
 }
@@ -298,4 +300,5 @@ func contains(s, substr string) bool {
 func init() {
 	rootCmd.AddCommand(agentCmd)
 	agentCmd.Flags().BoolVar(&autoExecute, "auto-execute", false, "Automatically approve and execute commands without prompting")
+	agentCmd.Flags().BoolVar(&reportOutput, "report-output", false, "report terraform output to server")
 }
