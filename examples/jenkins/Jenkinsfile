@@ -21,7 +21,7 @@ properties([
             try {
                 def url = new URL('https://api.iacconsole.com/v1/dimension/example-org/account?workspace=master&fallbacktomaster=true&needdimdata=false')
                 def connection = url.openConnection()
-                connection.setRequestProperty('Authorization', 'Basic NjYyY2FiN2M1ZTExNjgxOTczOGIwMWZlOnN1cGVydG9hc3Rlcg==')
+                connection.setRequestProperty('Authorization', 'Bearer iacc_339006e8-2220-4a09-9b3a-5641ddd5ac4a')
                 connection.requestMethod = 'GET'
                 
                 def response = connection.content.text
@@ -60,7 +60,7 @@ properties([
             try {
                 def url = new URL('https://api.iacconsole.com/v1/dimension/example-org/datacenter?workspace=master&fallbacktomaster=true&needdimdata=false')
                 def connection = url.openConnection()
-                connection.setRequestProperty('Authorization', 'Basic NjYyY2FiN2M1ZTExNjgxOTczOGIwMWZlOnN1cGVydG9hc3Rlcg==')
+                connection.setRequestProperty('Authorization', 'Bearer iacc_339006e8-2220-4a09-9b3a-5641ddd5ac4a')
                 connection.requestMethod = 'GET'
                 
                 def response = connection.content.text
@@ -86,7 +86,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        git url: 'https://github.com/alt-dima/iacconsole-cli.git', branch: 'main'
+        git url: 'https://github.com/iacconsole/iacconsole-cli.git', branch: 'main'
         echo "Selected account: ${params.Account}"
         echo "Selected data center: ${params.DataCenter}"
       }
@@ -107,8 +107,8 @@ pipeline {
           sh "curl -L -o tofu_1.10.7_linux_${archSuffix}.tar.gz https://github.com/opentofu/opentofu/releases/download/v1.10.7/tofu_1.10.7_linux_${archSuffix}.tar.gz"
           sh "tar -xvf tofu_1.10.7_linux_${archSuffix}.tar.gz -C /tmp"
           
-          sh "curl -L -o iacconsole-cli_0.6.0_linux_${archSuffix}.tar.gz https://github.com/alt-dima/iacconsole-cli/releases/download/v0.6.0/iacconsole-cli_0.6.0_linux_${archSuffix}.tar.gz"
-          sh "tar -xvf iacconsole-cli_0.6.0_linux_${archSuffix}.tar.gz"
+          sh "curl -L -o iacconsole-cli_0.9.0_linux_${archSuffix}.tar.gz https://github.com/iacconsole/iacconsole-cli/releases/download/v0.9.0/iacconsole-cli_0.9.0_linux_${archSuffix}.tar.gz"
+          sh "tar -xvf iacconsole-cli_0.9.0_linux_${archSuffix}.tar.gz"
         }
       }
     }
@@ -124,7 +124,7 @@ defaults:
     }
     stage('IaCConsole Plan') {
       environment {
-        IACCONSOLE_API_URL = 'https://662cab7c5e116819738b01fe:supertoaster@api.iacconsole.com'
+        IACCONSOLE_TOKEN = 'iacc_339006e8-2220-4a09-9b3a-5641ddd5ac4a'
       }
       steps {
         ansiColor('xterm') {
@@ -140,7 +140,7 @@ defaults:
     }
     stage('IaCConsole Apply') {
       environment {
-        IACCONSOLE_API_URL = 'https://662cab7c5e116819738b01fe:supertoaster@api.iacconsole.com'
+        IACCONSOLE_TOKEN = 'iacc_339006e8-2220-4a09-9b3a-5641ddd5ac4a'
       }
       steps {
         ansiColor('xterm') {
