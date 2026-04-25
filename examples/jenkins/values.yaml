@@ -15,7 +15,7 @@ controller:
                     scm {
                       git {
                         remote {
-                          url('https://github.com/alt-dima/iacconsole-cli.git')
+                          url('https://github.com/iacconsole/iacconsole-cli.git')
                           credentials('')
                         }
                         branch('main')
