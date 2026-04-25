@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -72,10 +72,18 @@ type AgentError struct {
 	Error string `json:"error"`
 }
 
-// ParseAPIURL parses the IACCONSOLE_API_URL environment variable
-func ParseAPIURL(apiUrl string) (wsURL string, authHeader string, accountID string, err error) {
+// ParseAPIURL parses the IACCONSOLE_API_URL environment variable and handles IACCONSOLE_TOKEN
+func GetAPIURL() (wsURL string, apiURLHost string, authHeader string, err error) {
+	apiUrl := os.Getenv("IACCONSOLE_API_URL")
+	token := os.Getenv("IACCONSOLE_TOKEN")
+
+	if token == "" {
+		return "", "", "", fmt.Errorf("IACCONSOLE_TOKEN is required. Please set it in your environment")
+	}
+
+	// Use default API URL if empty
 	if apiUrl == "" {
-		return "", "", "", fmt.Errorf("IACCONSOLE_API_URL is empty")
+		apiUrl = "https://api.iacconsole.com"
 	}
 
 	// Remove trailing slash
@@ -90,16 +98,6 @@ func ParseAPIURL(apiUrl string) (wsURL string, authHeader string, accountID stri
 		return "", "", "", fmt.Errorf("failed to parse IACCONSOLE_API_URL: %v", err)
 	}
 
-	if u.User == nil {
-		return "", "", "", fmt.Errorf("IACCONSOLE_API_URL must contain credentials in format https://ACCOUNTID:PASSWORD@host")
-	}
-
-	accountID = u.User.Username()
-	password, ok := u.User.Password()
-	if !ok || accountID == "" || password == "" {
-		return "", "", "", fmt.Errorf("IACCONSOLE_API_URL credentials must include both ACCOUNTID and PASSWORD")
-	}
-
 	scheme := "wss"
 	if u.Scheme == "http" || strings.HasPrefix(u.Host, "localhost:") {
 		scheme = "ws"
@@ -107,8 +105,7 @@ func ParseAPIURL(apiUrl string) (wsURL string, authHeader string, accountID stri
 
 	wsURL = fmt.Sprintf("%s://%s/v1/ws/agent", scheme, u.Host)
 
-	auth := accountID + ":" + password
-	authHeader = "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
-
-	return wsURL, authHeader, accountID, nil
+	// Token Authentication is mandatory
+	authHeader = "Bearer " + token
+	return wsURL, apiUrl, authHeader, nil
 }

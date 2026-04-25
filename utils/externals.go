@@ -80,9 +80,14 @@ func (s *State) GetDimData(ctx context.Context, dimensionKey string, dimensionVa
 			return nil, err
 		}
 	} else {
-		req, err := http.NewRequestWithContext(ctx, "GET", s.IacconsoleApiUrl + "/v1/dimension/" + s.OrgName + "/" + dimensionKey + "/" + dimensionValue + "?workspace=" + s.Workspace + "&fallbacktomaster=true", nil)
+		req, err := http.NewRequestWithContext(ctx, "GET", s.IacconsoleApiUrl+"/v1/dimension/"+s.OrgName+"/"+dimensionKey+"/"+dimensionValue+"?workspace="+s.Workspace+"&fallbacktomaster=true", nil)
 		if err != nil {
 			return nil, err
+		}
+		if s.AuthHeader != "" {
+			req.Header.Set("Authorization", s.AuthHeader)
+		} else {
+			log.Printf("No auth header set, request to report history will be unauthenticated")
 		}
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
@@ -189,9 +194,13 @@ func (s *State) ReportHistory(ctx context.Context, cmdToExec string, cmdArgs []s
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
+	if s.AuthHeader != "" {
+		req.Header.Set("Authorization", s.AuthHeader)
+	} else {
+		log.Printf("No auth header set, request to report history will be unauthenticated")
+	}
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("Failed to report history to %s: %v", url, err)
 		return

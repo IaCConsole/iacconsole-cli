@@ -13,6 +13,7 @@ type State struct {
 	UnitManifest      unitManifestStruct
 	StateS3Path       string
 	IacconsoleApiUrl  string
+	AuthHeader        string
 	Workspace         string
 	ReportOutput      bool
 }

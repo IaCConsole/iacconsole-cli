@@ -31,8 +31,7 @@ var agentCmd = &cobra.Command{
 		initConfig()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		apiUrl := os.Getenv("IACCONSOLE_API_URL")
-		wsURL, authHeader, accountID, err := utils.ParseAPIURL(apiUrl)
+		wsURL, _, authHeader, err := utils.GetAPIURL()
 		if err != nil {
 			log.Fatalf("Configuration error: %v", err)
 		}
@@ -40,7 +39,6 @@ var agentCmd = &cobra.Command{
 		// Generate unique agent ID (hostname + random suffix)
 		agentID := generateAgentID()
 
-		log.Printf("Starting agent for account: %s", accountID)
 		log.Printf("Agent ID: %s", agentID)
 		log.Printf("Connecting to: %s", wsURL)
 
@@ -230,7 +228,14 @@ func executeCommand(ctx context.Context, c *websocket.Conn, cmd utils.AgentComma
 	}
 
 	state := &utils.State{}
-	state.IacconsoleApiUrl = os.Getenv("IACCONSOLE_API_URL")
+	_, apiUrl, authHeader, err := utils.GetAPIURL()
+	if err != nil {
+		log.Println("Not using IaCConsole API")
+	} else {
+		state.IacconsoleApiUrl = apiUrl
+		state.AuthHeader = authHeader
+		log.Printf("Connecting to API: %s", state.IacconsoleApiUrl)
+	}
 	state.StateS3Path = "./state"
 	state.ReportOutput = reportOutput
 

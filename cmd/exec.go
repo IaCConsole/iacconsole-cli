@@ -27,35 +27,17 @@ var execCmd = &cobra.Command{
 		// Creating Session State and filling with values
 		s := &utils.State{}
 
-		IACCONSOLE_API_URL := os.Getenv("IACCONSOLE_API_URL")
-		if IACCONSOLE_API_URL != "" {
-			// validate URL format and remove trailing slash if present
-			if strings.HasSuffix(IACCONSOLE_API_URL, "/") {
-				IACCONSOLE_API_URL = strings.TrimRight(IACCONSOLE_API_URL, "/")
-			}
-
-			// Basic validation for IACCONSOLE_API_URL format
-			if !strings.HasPrefix(IACCONSOLE_API_URL, "https://") {
-				log.Fatalf("Error: IACCONSOLE_API_URL must start with https://")
-			}
-
-			// Check if URL contains credentials and correct domain
-			urlParts := strings.Split(strings.TrimPrefix(IACCONSOLE_API_URL, "https://"), "@")
-			if len(urlParts) != 2 || urlParts[1] != "api.iacconsole.com" {
-				log.Fatalf("Error: IACCONSOLE_API_URL must be in format https://ACCOUNTID:PASSWORD@api.iacconsole.com")
-			}
-
-			// Validate credential part has both account ID and password
-			credParts := strings.Split(urlParts[0], ":")
-			if len(credParts) != 2 || credParts[0] == "" || credParts[1] == "" {
-				log.Fatalf("Error: IACCONSOLE_API_URL credentials must include both ACCOUNTID and PASSWORD")
-			}
+		_, apiUrl, authHeader, err := utils.GetAPIURL()
+		if err != nil {
+			log.Println("Not using IaCConsole API")
+		} else {
+			s.IacconsoleApiUrl = apiUrl
+			s.AuthHeader = authHeader
 		}
 
 		s.UnitName, _ = cmd.Flags().GetString("unit")
 		s.OrgName, _ = cmd.Flags().GetString("org")
 		s.Workspace, _ = cmd.Flags().GetString("workspace")
-		s.IacconsoleApiUrl = IACCONSOLE_API_URL
 		s.DimensionsFlags, _ = cmd.Flags().GetStringSlice("dimension")
 		s.ReportOutput, _ = cmd.Flags().GetBool("report-output")
 		s.UnitPath, _ = filepath.Abs(s.GetStringFromViperByOrgOrDefault("units_path") + "/" + s.OrgName + "/" + s.UnitName)
