@@ -39,7 +39,6 @@ You will need any Kubernetes cluster (best small temporary like Podman+Kind or M
 Check that kubectl context poiting to this test cluster! Not Production!
 
 For a full end-to-end example of using IaCConsole CLI in a CI/CD pipeline, see the pre-configured Jenkins deployment in [examples/jenkins/README.md](examples/jenkins/README.md).
-<img width="1432" height="1188" alt="2025-11-07_20-41" src="https://github.com/user-attachments/assets/76a6e8b5-16cc-4818-840e-22603e38bc63" />
 
 ## Installation
 
@@ -169,8 +168,6 @@ You can generate an API Token in the **Settings > API Tokens** section of the Ia
 export IACCONSOLE_TOKEN='iacc_your-token-uuid'
 ```
 
-<img width="500" alt="Screenshot_20250915_222318" src="https://github.com/user-attachments/assets/062848dc-e67d-48c6-adfe-9e1b9fddc7fd" />
-
 With the correct `IACCONSOLE_TOKEN`, the CLI will connect and receive all the required dimension data from the IaCConsole API (CMDB).
 An additional parameter could be passed to iacconsole-cli `-w workspacename`. In general, `workspacename` is the branch name of the source repo where the dimension is stored. If Toaster CMDB does not find the dimension with the specified `workspacename`, it will try to return the dimension from the `master` workspace/branch!
 
@@ -180,8 +177,6 @@ An additional parameter could be passed to iacconsole-cli `-w workspacename`. In
 - **OpenAPI RESTful API** - Programmatic access to configuration data with full API documentation
 - **CI/CD Integration** - Fetch configurations directly in pipelines (e.g., [first-app.json](examples/inventory/demo-org/application/first-app.json) for validation)
 - **Dynamic Dropdowns** - Get dimension lists for [Jenkins drop-downs](examples/jenkins/README.md) to select deployment targets
-
-<img width="800" alt="Screenshot_20250915_222357" src="https://github.com/user-attachments/assets/735a4045-eb74-4fc0-b46d-aa01f655c7d0" />
 
 **OpenAPI Documentation:**
 [Swagger API docs - Full RESTful API documentation and examples](https://app.swaggerhub.com/apis-docs/altuhovsu/iacconsole-api/1.0.0)
