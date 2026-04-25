@@ -84,7 +84,7 @@ output "datacenter_az_count_from_inv" {
 		datacenterProdPath := filepath.Join(targetDir, "examples", "inventory", exampleOrg, "datacenter", "prod.json")
 		writeExampleFile(datacenterProdPath, exampleProdDatacenterContent, "example prod datacenter")
 	} else {
-		exampleCmd = "   export IACCONSOLE_API_URL=https://662cab7c5e116819738b01fe:supertoaster@api.iacconsole.com\n"
+		exampleCmd = "   export IACCONSOLE_TOKEN=iacc_339006e8-2220-4a09-9b3a-5641ddd5ac4a\n"
 	}
 
 	exampleCmd = exampleCmd +

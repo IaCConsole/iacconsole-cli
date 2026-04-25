@@ -162,21 +162,16 @@ Currently, only `dimensions` with a list of the required/expected dimensions (fr
 
 IaCConsole API is an OpenAPI-powered Configuration Management Database with a web-based **IaCConsole Web UI** for centrally managing infrastructure configurations.
 
-You can set the env variable `iacconsole_api_url` to point to the IaCConsole API (CMDB), like:
+You can set the env variable `IACCONSOLE_TOKEN` to point to the IaCConsole API (CMDB).
+You can generate an API Token in the **Settings > API Tokens** section of the IaC Console Web App.
 
 ```bash
-export IACCONSOLE_API_URL='https://accountid:accountpass@api.iacconsole.com'
-```
-
-To generate your own credentials please go to [https://iacconsole.com/](https://iacconsole.com/), fill the form with Account Name, Email, and press `Create Account` and you will receive generated credentials and a ready-to-use export command like:
-
-```
-export IACCONSOLE_API_URL=https://6634b72292e9e996105de19e:generatedpassword@api.iacconsole.com
+export IACCONSOLE_TOKEN='iacc_your-token-uuid'
 ```
 
 <img width="500" alt="Screenshot_20250915_222318" src="https://github.com/user-attachments/assets/062848dc-e67d-48c6-adfe-9e1b9fddc7fd" />
 
-With the correct `IACCONSOLE_API_URL`, the CLI will connect and receive all the required dimension data from the IaCConsole API (CMDB).
+With the correct `IACCONSOLE_TOKEN`, the CLI will connect and receive all the required dimension data from the IaCConsole API (CMDB).
 An additional parameter could be passed to iacconsole-cli `-w workspacename`. In general, `workspacename` is the branch name of the source repo where the dimension is stored. If Toaster CMDB does not find the dimension with the specified `workspacename`, it will try to return the dimension from the `master` workspace/branch!
 
 **IaCConsole API (CMDB)** provides additional features for your CI/CD pipelines:
@@ -195,7 +190,7 @@ To upload/update dimensions to the IaCConsole API from your Inventory Files repo
 
 ### File-based Configuration Storage (Inventory Files)
 
-If the env variable `IACCONSOLE_API_URL` is not set, the CLI will use file-based configuration Storage (probably dedicated git repo), specified by the path configured in `inventory_path`.
+If the env variable `IACCONSOLE_TOKEN` is not set, the CLI will use file-based configuration Storage (probably dedicated git repo), specified by the path configured in `inventory_path`.
 
 Examples:
 
