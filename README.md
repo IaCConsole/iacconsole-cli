@@ -113,6 +113,7 @@ For more complex tasks, you can ask the AI assistant to guide you step-by-step t
 
 Yes, you should check other Infrastructure as Code (IaC) orchestration tools for Terraform:
 
+- [Cubtera](https://github.com/cubtera/cubtera)
 - [Atmos](https://github.com/cloudposse/atmos)
 - [Digger](https://github.com/diggerhq/digger)
 - [Spacelift](https://github.com/spacelift-io)
