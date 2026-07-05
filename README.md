@@ -9,6 +9,8 @@
 
 IaCConsole CLI is a configuration management tool that dynamically orchestrates OpenTofu or Terraform deployments. It separates infrastructure configuration from code, enabling DevOps teams to reuse Terraform modules across multiple environments (dev, staging, production) without code duplication. Configuration can be sourced from files or the IaCConsole API (CMDB), an OpenAPI-powered configuration database.
 
+**Inspired by [Cubtera Multi-dimensional Infrastructure Manager](https://github.com/cubtera/cubtera)**
+
 ## Table of Contents
 
 - [Key Features](#key-features)
