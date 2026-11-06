@@ -14,6 +14,7 @@ The CLI dynamically orchestrates OpenTofu or Terraform deployments. It separates
 ## Table of Contents
 
 - [Key Features](#key-features)
+- [MCP Integration](#mcp-integration)
 - [Use Cases](#use-cases)
 - [Related Open-Source Tools](#related-open-source-tools)
 - [Installation](#installation)
@@ -31,6 +32,13 @@ The CLI dynamically orchestrates OpenTofu or Terraform deployments. It separates
 - `tfvars` and variables are generated automatically in a temporary folder alongside the selected Terraform code ("unit").
 - Once the temporary folder is ready, the CLI runs `terraform` or `tofu` with the specified parameters.
 - State files are kept separate for each environment, with remote state paths derived from the configured dimensions. Deployed configurations are stored in different `tfstate` files in remote storage such as S3 or GCS.
+
+## MCP Integration
+
+IaCConsole CLI supports the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), allowing AI coding assistants to interact directly with your infrastructure configuration. This enables AI agents to query your CMDB, understand your infrastructure layout, and assist with complex remediation tasks safely.
+
+- **Context-aware**: Assistants can retrieve dimension data, unit configurations, and inventory status directly through the protocol.
+- **AI-Native Workflow**: Use your preferred AI assistant to plan, generate, and troubleshoot your infrastructure without leaving your editor.
 
 ## Use Cases
 
@@ -127,19 +135,18 @@ For more complex tasks, you can ask the AI assistant to guide you step-by-step t
 
 ## What about alternative tools?
 
-Yes, you should also check other Infrastructure as Code (IaC) orchestration tools for Terraform and OpenTofu:
+Yes, there are several robust Infrastructure as Code (IaC) orchestration tools available for Terraform and OpenTofu. IaCConsole CLI is designed to complement these by focusing on dynamic CMDB integration, AI-native workflows, and automated lifecycle management.
 
-- [Atmos](https://github.com/cloudposse/atmos)
-- [Digger](https://github.com/diggerhq/digger)
-- [Spacelift](https://github.com/spacelift-io)
-- [Terragrunt](https://github.com/gruntwork-io/terragrunt)
-- [Terramate](https://github.com/terramate-io/terramate)
+### Comparison Overview
 
-So why another tool?
+| Feature | IaCConsole CLI | Terragrunt | Terramate | Atmos |
+| :--- | :--- | :--- | :--- | :--- |
+| **Primary Focus** | AI-Native / CMDB Integration | DRY / Module Orchestration | Code Gen / Orchestration | Stack / Orchestration |
+| **CMDB/IDP Native** | Yes | No | No | No |
+| **AI/MCP Integration** | Built-in | Requires external | Requires external | Requires external |
+| **Architecture** | Dynamic / External | Hierarchical | Hierarchical | Hierarchical |
 
-1. The more open source tools, the better (for GitHub Copilot, not for Earth).
-2. The more choice, the better (there are countries where people have no choice).
-3. Imagine there is only AWS CloudFormation.
+IaCConsole CLI is inspired by tools like [Cubtera](https://cubtera.com/), aiming to provide a lightweight, open-source orchestration layer that integrates directly with your development environment through the Model Context Protocol (MCP).
 
 ## Usage
 
