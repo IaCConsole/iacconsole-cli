@@ -9,7 +9,7 @@
 
 IaCConsole CLI is a free, open-source configuration management tool for OpenTofu and Terraform. It is part of [IaCConsole](https://github.com/IaCConsole), a set of open-source tools for DevOps, DevSecOps, and FinOps engineers.
 
-The CLI dynamically orchestrates OpenTofu or Terraform deployments. It separates infrastructure configuration from code so teams can reuse modules across environments (dev, staging, production) without duplication. Configuration can come from local files or from the free hosted IaCConsole CMDB and Internal Developer Portal at [app.iacconsole.com](https://app.iacconsole.com).
+The CLI dynamically orchestrates OpenTofu or Terraform deployments. It separates infrastructure configuration from code so teams can reuse modules across environments (dev, staging, production) without duplication. Configuration can come from local files or from the free hosted IaCConsole CMDB and Internal Developer Portal at [iacconsole.com](https://iacconsole.com).
 
 ## Table of Contents
 
@@ -57,7 +57,7 @@ IaCConsole publishes four free, open-source repositories:
 - [go-entrypoint](https://github.com/IaCConsole/go-entrypoint) — an entrypoint binary that starts your app with secrets from Vault and forwards signals correctly. Go, Apache-2.0.
 - [go-entrypoint-updater](https://github.com/IaCConsole/go-entrypoint-updater) — keeps go-entrypoint up to date on Kubernetes nodes so every pod uses the current build. Go.
 
-The CLI also works with the free hosted console at [app.iacconsole.com](https://app.iacconsole.com), which provides a CMDB, an Internal Developer Portal, and AI assistants for DevOps, DevSecOps, and FinOps work.
+The CLI also works with the free hosted console at [iacconsole.com](https://iacconsole.com), which provides a CMDB, an Internal Developer Portal, and AI assistants for DevOps, DevSecOps, and FinOps work.
 
 ## Installation
 
@@ -139,12 +139,12 @@ Yes, there are several robust Infrastructure as Code (IaC) orchestration tools a
 
 ### Comparison Overview
 
-| Feature | IaCConsole CLI | Terragrunt | Terramate | Atmos |
-| :--- | :--- | :--- | :--- | :--- |
-| **Primary Focus** | AI-Native / CMDB Integration | DRY / Module Orchestration | Code Gen / Orchestration | Stack / Orchestration |
-| **CMDB/IDP Native** | Yes | No | No | No |
-| **AI/MCP Integration** | Built-in | Requires external | Requires external | Requires external |
-| **Architecture** | Dynamic / External | Hierarchical | Hierarchical | Hierarchical |
+| Feature                | IaCConsole CLI               | Terragrunt                 | Terramate                | Atmos                 |
+| :--------------------- | :--------------------------- | :------------------------- | :----------------------- | :-------------------- |
+| **Primary Focus**      | AI-Native / CMDB Integration | DRY / Module Orchestration | Code Gen / Orchestration | Stack / Orchestration |
+| **CMDB/IDP Native**    | Yes                          | No                         | No                       | No                    |
+| **AI/MCP Integration** | Built-in                     | Requires external          | Requires external        | Requires external     |
+| **Architecture**       | Dynamic / External           | Hierarchical               | Hierarchical             | Hierarchical          |
 
 IaCConsole CLI is inspired by tools like [Cubtera](https://cubtera.com/), aiming to provide a lightweight, open-source orchestration layer that integrates directly with your development environment through the Model Context Protocol (MCP).
 
@@ -184,10 +184,10 @@ Currently it supports `dimensions`: a list of the required or expected dimension
 
 ### Configuration Management Database (CMDB) - IaCConsole API
 
-IaCConsole API is an OpenAPI-powered Configuration Management Database with a web-based **IaCConsole Web UI** for centrally managing infrastructure configurations. The hosted API and web UI at [app.iacconsole.com](https://app.iacconsole.com) are free to use.
+IaCConsole API is an OpenAPI-powered Configuration Management Database with a web-based **IaCConsole Web UI** for centrally managing infrastructure configurations. The hosted API and web UI at [iacconsole.com](https://iacconsole.com) are free to use.
 
 You can set the env variable `IACCONSOLE_TOKEN` to point to the IaCConsole API (CMDB).
-You can generate an API Token in the **Settings > API Tokens** section of the [IaCConsole Web App](https://app.iacconsole.com).
+You can generate an API Token in the **Settings > API Tokens** section of the [IaCConsole Web App](https://iacconsole.com).
 
 ```bash
 export IACCONSOLE_TOKEN='iacc_your-token-uuid'
@@ -198,7 +198,7 @@ An additional parameter could be passed to iacconsole-cli `-w workspacename`. In
 
 **IaCConsole API (CMDB)** provides additional features for your CI/CD pipelines:
 
-- **IaCConsole Web UI** - Visual console for managing configurations at [https://app.iacconsole.com](https://app.iacconsole.com)
+- **IaCConsole Web UI** - Visual console for managing configurations at [https://iacconsole.com](https://iacconsole.com)
 - **OpenAPI RESTful API** - Programmatic access to configuration data with full API documentation
 - **CI/CD Integration** - Fetch configurations directly in pipelines (e.g., [first-app.json](examples/inventory/demo-org/application/first-app.json) for validation)
 - **Dynamic Dropdowns** - Get dimension lists for [Jenkins drop-downs](examples/jenkins/README.md) to select deployment targets
