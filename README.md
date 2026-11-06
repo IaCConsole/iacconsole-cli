@@ -1,31 +1,36 @@
 # IaCConsole CLI — Configuration Management for OpenTofu and Terraform
 
-[![GitHub stars](https://img.shields.io/github/stars/alt-dima/iacconsole-cli)](https://github.com/iacconsole/iacconsole-cli)
-[![GitHub license](https://img.shields.io/github/license/alt-dima/iacconsole-cli)](https://github.com/iacconsole/iacconsole-cli/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/IaCConsole/iacconsole-cli)](https://github.com/IaCConsole/iacconsole-cli)
+[![GitHub license](https://img.shields.io/github/license/IaCConsole/iacconsole-cli)](https://github.com/IaCConsole/iacconsole-cli/blob/main/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/iacconsole/iacconsole-cli)](https://goreportcard.com/report/github.com/iacconsole/iacconsole-cli)
-[![GitHub release](https://img.shields.io/github/v/release/alt-dima/iacconsole-cli)](https://github.com/iacconsole/iacconsole-cli/releases)
+[![GitHub release](https://img.shields.io/github/v/release/IaCConsole/iacconsole-cli)](https://github.com/IaCConsole/iacconsole-cli/releases)
 [![Go Version](https://img.shields.io/badge/go-%3E%3D1.26-blue)](https://golang.org/)
-[![Downloads](https://img.shields.io/github/downloads/alt-dima/iacconsole-cli/total)](https://github.com/iacconsole/iacconsole-cli/releases)
+[![Downloads](https://img.shields.io/github/downloads/IaCConsole/iacconsole-cli/total)](https://github.com/IaCConsole/iacconsole-cli/releases)
 
-IaCConsole CLI is a configuration management tool that dynamically orchestrates OpenTofu or Terraform deployments. It separates infrastructure configuration from code, enabling DevOps teams to reuse Terraform modules across multiple environments (dev, staging, production) without code duplication. Configuration can be sourced from files or the IaCConsole API (CMDB), an OpenAPI-powered configuration database.
+IaCConsole CLI is a free, open-source configuration management tool for OpenTofu and Terraform. It is part of [IaCConsole](https://github.com/IaCConsole), a set of open-source tools for DevOps, DevSecOps, and FinOps engineers.
 
-**Inspired by [Cubtera Multi-dimensional Infrastructure Manager](https://github.com/cubtera/cubtera)**
+The CLI dynamically orchestrates OpenTofu or Terraform deployments. It separates infrastructure configuration from code so teams can reuse modules across environments (dev, staging, production) without duplication. Configuration can come from local files or from the free hosted IaCConsole CMDB and Internal Developer Portal at [app.iacconsole.com](https://app.iacconsole.com).
 
 ## Table of Contents
 
 - [Key Features](#key-features)
 - [Use Cases](#use-cases)
-- [Quick Start](#quick-start)
+- [Related Open-Source Tools](#related-open-source-tools)
 - [Installation](#installation)
+- [Quick Start](#quick-start-locally-with-demo-configuration)
+- [Jenkins CI Example](#quick-start-with-jenkins-and-demo-configuration)
+- [Quick Start with AI Coding Assistants](#quick-start-with-ai-coding-assistants)
 - [Usage](#usage)
-- [Configuration](#configuration)
+- [Configuration Storage](#configuration-storage)
 - [License](#license)
 
-- **Environment configuration stored outside the Terraform/OpenTofu code**
-- **Terraform/OpenTofu code, called "unit", should be generic enough to handle provided configuration to deploy the same resources with different configurations**
-- **`tfvars` and `variables` are automatically generated in the temporary folder with selected terraform code ("unit") resulting in a full set of the Terraform code and configuration variables**
-- **After the temporary folder is ready, it executes `terraform` or `tofu` with specified parameters**
-- **Maintains separate state files for each environment, automatically providing configuration for remote state management (different path on storage based on configured dimensions). So the deployed configuration is stored in different `tfstate` files in remote storage (S3, GCS)**
+## Key Features
+
+- Environment configuration is stored outside the Terraform/OpenTofu code.
+- Terraform/OpenTofu code, called a "unit", stays generic enough to deploy the same resources with different configurations.
+- `tfvars` and variables are generated automatically in a temporary folder alongside the selected Terraform code ("unit").
+- Once the temporary folder is ready, the CLI runs `terraform` or `tofu` with the specified parameters.
+- State files are kept separate for each environment, with remote state paths derived from the configured dimensions. Deployed configurations are stored in different `tfstate` files in remote storage such as S3 or GCS.
 
 ## Use Cases
 
@@ -35,18 +40,22 @@ IaCConsole CLI is a configuration management tool that dynamically orchestrates 
 - Terraform/OpenTofu workflow automation
 - Multi-cloud infrastructure orchestration
 
-## Quick start with Jenkins and demo configuration
+## Related Open-Source Tools
 
-You will need any Kubernetes cluster (best small temporary like Podman+Kind or MiniKube).
-Check that kubectl context poiting to this test cluster! Not Production!
+IaCConsole publishes four free, open-source repositories:
 
-For a full end-to-end example of using IaCConsole CLI in a CI/CD pipeline, see the pre-configured Jenkins deployment in [examples/jenkins/README.md](examples/jenkins/README.md).
+- [prescaler](https://github.com/IaCConsole/prescaler) — a Kubernetes operator that pre-scales workloads from CPU usage so pods are ready before traffic arrives. Go.
+- [iacconsole-cli](https://github.com/IaCConsole/iacconsole-cli) — this repository. Configuration management for OpenTofu and Terraform. Go, Apache-2.0.
+- [go-entrypoint](https://github.com/IaCConsole/go-entrypoint) — an entrypoint binary that starts your app with secrets from Vault and forwards signals correctly. Go, Apache-2.0.
+- [go-entrypoint-updater](https://github.com/IaCConsole/go-entrypoint-updater) — keeps go-entrypoint up to date on Kubernetes nodes so every pod uses the current build. Go.
+
+The CLI also works with the free hosted console at [app.iacconsole.com](https://app.iacconsole.com), which provides a CMDB, an Internal Developer Portal, and AI assistants for DevOps, DevSecOps, and FinOps work.
 
 ## Installation
 
 ### Download Pre-built Binaries
 
-1. Download the latest release from [GitHub Releases](https://github.com/iacconsole/iacconsole-cli/releases) (version >= 0.5.0)
+1. Download the latest release from [GitHub Releases](https://github.com/IaCConsole/iacconsole-cli/releases) (version >= 0.5.0)
 2. Extract the binary for your platform (Linux/macOS)
 3. Make it executable: `chmod +x iacconsole-cli`
 4. Move to your PATH: `sudo mv iacconsole-cli /usr/local/bin/`
@@ -54,7 +63,7 @@ For a full end-to-end example of using IaCConsole CLI in a CI/CD pipeline, see t
 ### Build from Source
 
 ```bash
-git clone https://github.com/iacconsole/iacconsole-cli.git
+git clone https://github.com/IaCConsole/iacconsole-cli.git
 cd iacconsole-cli
 go build -o bin/iacconsole-cli .
 ```
@@ -62,24 +71,31 @@ go build -o bin/iacconsole-cli .
 ### Prerequisites
 
 - [OpenTofu](https://opentofu.org/docs/intro/install/) or [Terraform](https://developer.hashicorp.com/terraform/install)
-- Go 1.19+ (for building from source)
+- Go 1.26+ (for building from source)
 
 ## Quick start locally with demo configuration
 
-2. Install [OpenTofu](https://opentofu.org/docs/intro/install/)
-3. Execute to generate simple demo configuration with connection to demo account in the [IaCConsole API (CMDB)](#configuration-management-database-cmdb---iacconsole-api):
+1. Install [OpenTofu](https://opentofu.org/docs/intro/install/)
+2. Execute to generate a simple demo configuration connected to the demo account in the [IaCConsole API (CMDB)](#configuration-management-database-cmdb---iacconsole-api):
 
 ```bash
 iacconsole-cli init
 ```
 
-To generate with [file based inventory](#file-based-infrastructure-layers-configuration-storage-inventory-files):
+To generate with [file-based inventory](#file-based-configuration-storage-inventory-files):
 
 ```bash
 iacconsole-cli init --iacconsole-db=false
 ```
 
-4. Follow on-screen instructions
+3. Follow the on-screen instructions
+
+## Quick start with Jenkins and demo configuration
+
+You will need any Kubernetes cluster (ideally a small temporary one such as Podman + Kind or minikube).
+Check that the kubectl context points to this test cluster, not production.
+
+For a full end-to-end example of using IaCConsole CLI in a CI/CD pipeline, see the pre-configured Jenkins deployment in [examples/jenkins/README.md](examples/jenkins/README.md).
 
 ## Quick start with AI Coding Assistants
 
@@ -111,9 +127,8 @@ For more complex tasks, you can ask the AI assistant to guide you step-by-step t
 
 ## What about alternative tools?
 
-Yes, you should check other Infrastructure as Code (IaC) orchestration tools for Terraform:
+Yes, you should also check other Infrastructure as Code (IaC) orchestration tools for Terraform and OpenTofu:
 
-- [Cubtera](https://github.com/cubtera/cubtera)
 - [Atmos](https://github.com/cloudposse/atmos)
 - [Digger](https://github.com/diggerhq/digger)
 - [Spacelift](https://github.com/spacelift-io)
@@ -148,47 +163,50 @@ Organization with Google Cloud resources and state stored in Google Cloud Storag
 - `-c` = to remove temp dir after any `iacconsole-cli` execution (after `apply` or `destroy` and exit code=0 temp dir removed automatically)
 - `-o` = name of the `organization` (subfolder in **Inventory**, **units** folders and in `.iacconsolerc` config section)
 - `-d` = `dimension` to attach to tofu/terraform. You may specify as many `-d` pairs as you need!
-- `-t` = name of the `unit` in the `units` folder
+- `-u` = name of the `unit` in the `units` folder
 
-## unit Manifest
+## Unit Manifest
 
-Special JSON file with the name `unit_manifest.json` in the `unit` folder provides options for iacconsole-cli.
+The optional `unit_manifest.json` file in the `unit` folder provides options for IaCConsole CLI.
 
-Currently, only `dimensions` with a list of the required/expected dimensions (from **Inventory Store**)
+Currently it supports `dimensions`: a list of the required or expected dimensions from the **Inventory Store**.
 
 [unit_manifest.json example](examples/units/demo-org/vpc/unit_manifest.json)
 
 ## Configuration Storage
 
-### Configuration Management Database (CMDB) — IaCConsole API
+### Configuration Management Database (CMDB) - IaCConsole API
 
-IaCConsole API is an OpenAPI-powered Configuration Management Database with a web-based **IaCConsole Web UI** for centrally managing infrastructure configurations.
+IaCConsole API is an OpenAPI-powered Configuration Management Database with a web-based **IaCConsole Web UI** for centrally managing infrastructure configurations. The hosted API and web UI at [app.iacconsole.com](https://app.iacconsole.com) are free to use.
 
 You can set the env variable `IACCONSOLE_TOKEN` to point to the IaCConsole API (CMDB).
-You can generate an API Token in the **Settings > API Tokens** section of the IaC Console Web App.
+You can generate an API Token in the **Settings > API Tokens** section of the [IaCConsole Web App](https://app.iacconsole.com).
 
 ```bash
 export IACCONSOLE_TOKEN='iacc_your-token-uuid'
 ```
 
 With the correct `IACCONSOLE_TOKEN`, the CLI will connect and receive all the required dimension data from the IaCConsole API (CMDB).
-An additional parameter could be passed to iacconsole-cli `-w workspacename`. In general, `workspacename` is the branch name of the source repo where the dimension is stored. If Toaster CMDB does not find the dimension with the specified `workspacename`, it will try to return the dimension from the `master` workspace/branch!
+An additional parameter could be passed to iacconsole-cli `-w workspacename`. In general, `workspacename` is the branch name of the source repo where the dimension is stored. If the IaCConsole API (CMDB) does not find the dimension with the specified `workspacename`, it will try to return the dimension from the `master` workspace/branch!
 
 **IaCConsole API (CMDB)** provides additional features for your CI/CD pipelines:
 
-- **IaCConsole Web UI** - Visual console for managing configurations at [https://iacconsole.com/console](https://iacconsole.com/console)
+- **IaCConsole Web UI** - Visual console for managing configurations at [https://app.iacconsole.com](https://app.iacconsole.com)
 - **OpenAPI RESTful API** - Programmatic access to configuration data with full API documentation
 - **CI/CD Integration** - Fetch configurations directly in pipelines (e.g., [first-app.json](examples/inventory/demo-org/application/first-app.json) for validation)
 - **Dynamic Dropdowns** - Get dimension lists for [Jenkins drop-downs](examples/jenkins/README.md) to select deployment targets
 
-**OpenAPI Documentation:**
-[Swagger API docs - Full RESTful API documentation and examples](https://app.swaggerhub.com/apis-docs/altuhovsu/iacconsole-api/1.0.0)
+**API Documentation:**
+[IaCConsole API guide - endpoints and examples](https://iacconsole.com/docs/api)
 
-To upload/update dimensions to the IaCConsole API from your Inventory Files repo you can use [inventory-to-toaster.sh script example](examples/inventory-to-toaster.sh) and execute it like `bash examples/inventory-to-toaster.sh examples/inventory/`
+**OpenAPI Reference:**
+[Swagger API docs - full RESTful API documentation and examples](https://app.swaggerhub.com/apis-docs/altuhovsu/iacconsole-api/1.0.0)
+
+To upload/update dimensions to the IaCConsole API from your Inventory Files repo you can use [inventory-to-iacconsole-db.sh script example](examples/inventory-to-iacconsole-db.sh) and execute it like `bash examples/inventory-to-iacconsole-db.sh examples/inventory/`
 
 ### File-based Configuration Storage (Inventory Files)
 
-If the env variable `IACCONSOLE_TOKEN` is not set, the CLI will use file-based configuration Storage (probably dedicated git repo), specified by the path configured in `inventory_path`.
+If the env variable `IACCONSOLE_TOKEN` is not set, the CLI uses file-based configuration storage (typically a dedicated Git repository), specified by the path configured in `inventory_path`.
 
 Examples:
 
@@ -197,7 +215,7 @@ Examples:
 
 ### Dimensions usage in tf-code
 
-When you set dimensions in the CLI flags `-d datacenter:staging1`, IaCConsole CLI will provide you inside tf-code the following variables:
+When you set dimensions with the CLI flags `-d datacenter:staging1`, IaCConsole CLI provides the following variables inside the Terraform/OpenTofu code:
 
 - var.iacconsole_datacenter_name = will contain string `staging1`
 - var.iacconsole_datacenter_data = will contain the whole object from `staging1.json`
@@ -209,12 +227,12 @@ Examples:
 
 ## Passing environment variables from shell
 
-For example, you need to pass a variable (AWS region) from shell to the terraform code, simply set it and use it!
+For example, to pass a variable (such as an AWS region) from the shell to the Terraform code, set it and use it:
 
-**Environment variable must start with `iacconsole-cli_envvar_` prefix!**
+**Environment variables must start with the `iacconsole_envvar_` prefix.**
 
 ```bash
-export iacconsole-cli_envvar_awsregion=us-east-1
+export iacconsole_envvar_awsregion=us-east-1
 ```
 
 In the TF code:
@@ -229,20 +247,20 @@ provider "aws" {
 
 ## $HOME/.iacconsolerc
 
-Config file (in YAML format) path may be provided by the `--config` flag, for example:
+The config file path (YAML format) can be provided with the `--config` flag, for example:
 
 ```bash
-iacconsole-cli --config path_to_config/iacconsole-cliconfig exec -o demo-org -d account:test-account -d datacenter:staging1 -u vpc -- init
+iacconsole-cli --config path_to_config/.iacconsolerc exec -o demo-org -d account:test-account -d datacenter:staging1 -u vpc -- init
 ```
 
-If the `--config` flag is not set, then it will try to load from the default location `$HOME/.iacconsolerc` (current binary name remains `iacconsole-cli`).
+If the `--config` flag is not set, the CLI tries to load the file from the default location, `$HOME/.iacconsolerc`.
 
 [.iacconsolerc example](examples/.iacconsolerc):
 
 ```yaml
 defaults:
   units_path: examples/units
-  shared_modules_path: examples/units/shared-modules
+  shared_modules_path: examples/shared-modules
   inventory_path: examples/inventory
   cmd_to_exec: tofu
   backend:
@@ -255,14 +273,14 @@ gcp-org:
     prefix: $iacconsole_state_path
 ```
 
-- `units_path` = relative path to the folder with terraform code (`unit`)
-- `shared_modules_path` = relative path to the folder with shared TF modules maybe used by any `unit`
-- `inventory_path` = relative path to the folder with JSONs
+- `units_path` = relative path to the folder with Terraform code (`unit`)
+- `shared_modules_path` = relative path to the folder with shared Terraform modules that any `unit` can use
+- `inventory_path` = relative path to the folder with JSON inventory files
 - `cmd_to_exec` = name of the binary to execute (`tofu` or `terraform`)
-- `backend` = Config values for backend provider. All the child key:values will be provided to `init` and `$iacconsole_state_path` will be replaced by the generated path.
-  For example, when you execute `iacconsole-cli exec ...... -- init`, IaCConsole CLI actually will execute `init -backend-config=bucket=gcp-tfstates -backend-config=prefix=account_free-tier/free_instance.tfstate`
+- `backend` = config values for the backend provider. All child key/value pairs are passed to `init`, and `$iacconsole_state_path` is replaced with the generated path.
+  For example, when you execute `iacconsole-cli exec ... -- init`, IaCConsole CLI runs `init -backend-config=bucket=gcp-tfstates -backend-config=prefix=account_free-tier/free_instance.tfstate`.
 
-At least
+At least the following must be set in the config file, with key/value pairs specific to the backend provider used by the organization:
 
 ```yaml
 defaults:
@@ -271,9 +289,7 @@ defaults:
     key: $iacconsole_state_path
 ```
 
-must be set in the config file! With key:values specific for the backend provider being used in org!
-
-Other options contain hard-coded defaults:
+Other options have built-in defaults:
 
 ```yaml
 defaults:
@@ -285,11 +301,11 @@ defaults:
 
 ## Shared modules support
 
-It is a good practice to move some generic terraform code to the `modules` and reuse those modules in multiple terraform code (**units**)
+It is good practice to move generic Terraform code into modules and reuse those modules across multiple units.
 
-Path to the folder with such private shared modules is configured by the `shared_modules_path` parameter in the `.iacconsolerc` configuration file.
+The path to the folder with such private shared modules is configured by the `shared_modules_path` parameter in the `.iacconsolerc` configuration file.
 
-This folder will be mounted/linked to every temporary folder (set) so you could use any module by short path like
+This folder is mounted or linked into every temporary folder, so you can reference any module by a short path:
 
 ```
 //use shared-module
@@ -300,14 +316,14 @@ module "vpc" {
 
 Examples:
 
-- [Shared module for VPC creation](examples/units/shared-modules/create_vpc)
+- [Shared module for VPC creation](examples/shared-modules/create_vpc)
 - [Shared module for VPC creation used in code](examples/units/demo-org/vpc/main.tf#L3)
 
 ## Remote state (Terraform Backend where state data files are stored)
 
-AWS, Google Cloud, and some other backends are supported! You can configure any backend provider in the [Config file](#homeiacconsole-cli)
+AWS, Google Cloud, and some other backends are supported. You can configure any backend provider in the [config file](#homeiacconsolerc).
 
-[For AWS S3 your terraform code (`unit`) should contain at least:](examples/units/demo-org/vpc/versions.tf#L4):
+Your Terraform code (`unit`) should contain at least the following for [AWS S3](examples/units/demo-org/vpc/versions.tf#L4):
 
 ```
 terraform {
@@ -315,7 +331,7 @@ terraform {
 }
 ```
 
-[For Google Cloud Storage your terraform code (`unit`) should contain at least:](examples/units/gcp-org/free_instance/versions.tf#L4):
+For [Google Cloud Storage](examples/units/gcp-org/free_instance/versions.tf#L4):
 
 ```
 terraform {
@@ -331,11 +347,11 @@ This could be useful if you want to store by default tfstate for all the organiz
 
 ## Data Source Configuration (data "terraform_remote_state")
 
-To simplify "Data Source Configuration" (`data "terraform_remote_state" "tfstate" { }`) it will be nice to have backend config values as tfvars.
+To simplify data source configuration (`data "terraform_remote_state" "tfstate" { }`), it helps to have backend config values available as tfvars.
 
-`var.iacconsole_backend_config` will contain all the parameters from the [config (backend Section)](#homeiacconsole-cli)
+`var.iacconsole_backend_config` contains all parameters from the [`backend` section of the config](#homeiacconsolerc).
 
-[For example, for AWS S3](examples/units/demo-org/vpc/data.tf):
+For example, for AWS S3 ([examples/units/demo-org/vpc/data.tf](examples/units/demo-org/vpc/data.tf)):
 
 ```
 data "terraform_remote_state" "network" {
@@ -360,11 +376,11 @@ data "terraform_remote_state" "free_instance" {
 }
 ```
 
-You will set `key/prefix` to another unite's tfstate, which outputs you want to use.
+You set `key` or `prefix` to another unit's tfstate whose outputs you want to use.
 
 ## $HOME/.tofurc
 
-Recommended to enable plugin_cache_dir to reuse providers.
+We recommend enabling `plugin_cache_dir` to reuse providers.
 
 [.tofurc example](examples/.tofurc):
 
